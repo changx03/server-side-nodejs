@@ -17,48 +17,99 @@ const dboper = require('./operation');
 const url = 'mongodb://localhost:27017/conFusion';
 const colName = 'dishes';
 
-MongoClient.connect(url, (err, database) => {
-  assert.equal(err, null);
-  console.log('Connet correctly to server');
+// MongoClient.connect(url, (err, database) => {
+//   assert.equal(err, null);
+//   console.log('Connet correctly to server');
 
-  const conFusionDb = database.db('conFusion');
+//   const conFusionDb = database.db('conFusion');
 
-  dboper.insertDocument(
-    conFusionDb,
-    { name: 'Vadonut', description: 'nut' },
-    colName,
-    result => {
-      console.log('Insert', result.ops);
-      console.log('\n');
+//   dboper.insertDocument(
+//     conFusionDb,
+//     { name: 'Vadonut', description: 'nut' },
+//     colName,
+//     result => {
+//       console.log('Insert', result.ops);
+//       console.log('\n');
 
-      dboper.findDocuments(conFusionDb, colName, docs => {
-        console.log('Found', docs);
-        console.log('\n');
+//       dboper.findDocuments(conFusionDb, colName, docs => {
+//         console.log('Found', docs);
+//         console.log('\n');
 
-        dboper.updateDocument(
+//         dboper.updateDocument(
+//           conFusionDb,
+//           { name: 'Vadonut' },
+//           { description: 'Updated' },
+//           colName,
+//           result => {
+//             console.log('Updated', result.result.ops);
+//             console.log('\n');
+
+//             dboper.findDocuments(conFusionDb, colName, docs => {
+//               console.log('Found', docs);
+//               console.log('\n');
+
+//               conFusionDb.dropCollection(colName, result => {
+//                 console.log('Dropped collection', result);
+//                 database.close();
+//               });
+//             });
+//           }
+//         );
+//       });
+//     }
+//   );
+// });
+
+MongoClient.connect(url)
+  .then(
+    db => {
+      const conFusionDb = db.db('conFusion');
+
+      dboper
+        .insertDocument(
           conFusionDb,
-          { name: 'Vadonut' },
-          { description: 'Updated' },
-          colName,
-          result => {
-            console.log('Updated', result.result.ops);
-            console.log('\n');
+          { name: 'Vadonut', description: 'nut' },
+          colName
+        )
+        .then(result => {
+          console.log('Insert', result.ops);
+          return dboper.findDocuments(conFusionDb, colName);
+        })
+        .then(docs => {
+          console.log('Found', docs);
+          return dboper.updateDocument(
+            conFusionDb,
+            { name: 'Vadonut' },
+            { description: 'Updated' },
+            colName
+          );
+        })
+        .then(result => {
+          console.log('Updated Document:\n', result.result);
 
-            dboper.findDocuments(conFusionDb, colName, docs => {
-              console.log('Found', docs);
-              console.log('\n');
+          return dboper.findDocuments(conFusionDb, 'dishes');
+        })
+        .then(docs => {
+          console.log('Found Updated Documents:\n', docs);
 
-              conFusionDb.dropCollection(colName, result => {
-                console.log('Dropped collection', result);
-                database.close();
-              });
-            });
-          }
-        );
-      });
+          return conFusionDb.dropCollection('dishes');
+        })
+        .then(result => {
+          console.log('Dropped Collection: ', result);
+
+          return db.close();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    err => {
+      console.log(err);
     }
-  );
-});
+  )
+  .catch(err => {
+    console.log(err);
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
