@@ -35,11 +35,33 @@ mongoose.connect(url).then(
       .then(dish => {
         console.log(dish);
 
-        return Dishes.find({}).exec();
+        return Dishes.findByIdAndUpdate(
+          dish._id,
+          {
+            $set: {
+              description: 'Updated',
+            },
+          },
+          {
+            new: true,
+          }
+        ).exec();
       })
-      .then(dishes => {
-        console.log(dishes);
-        return Dishes.collection.drop();
+      .then(dish => {
+        // console.log(dish);
+
+        dish.comments.push({
+          rating: 5,
+          author: 'Luke',
+        });
+
+        // return Dishes.collection.drop();
+        return dish.save();
+      })
+      .then(dish => {
+        console.log(dish);
+
+        return mongoose.connection.db.dropCollection('dishes');
       })
       // Not really need
       // .then(() => {
