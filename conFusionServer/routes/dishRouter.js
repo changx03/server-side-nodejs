@@ -158,10 +158,10 @@ dishRouter
             Dishes.update(
               { _id: req.params.dishID },
               { $set: { comments: [] } }
-            ).then(dish => {
+            ).then(result => {
               res.statusCode = 200;
               res.setHeader('Content-Type', 'application/json');
-              res.json(dish);
+              res.json(result);
             });
           } else {
             err = new Error(`Dish ${req.params.dishID} not found`);
