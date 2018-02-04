@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+const morgan = require('morgan');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -25,6 +26,8 @@ mongoose.connect(url, { keepAlive: 120 }).then(
 );
 
 var app = express();
+
+app.use(morgan('dev'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
