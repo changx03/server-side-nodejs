@@ -14,6 +14,7 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '8091');
 app.set('port', port);
+const hostName = 'localhost';
 
 /**
  * Create HTTP server.
@@ -24,8 +25,10 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
+server.listen(port, hostName, () => {
+  console.log(`Server is running on http://${hostName}:${port}`);
+});
 
-server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
