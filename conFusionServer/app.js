@@ -4,10 +4,11 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -42,16 +43,27 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser(COOKIE_SECRET));
+// app.use(cookieParser(COOKIE_SECRET));
+app.use(
+  session({
+    name: 'session-id',
+    secret: COOKIE_SECRET,
+    saveUninitialized: false,
+    resave: false,
+    store: new FileStore(),
+  })
+);
 
 function auth(req, res, next) {
-  console.log(req.signedCookies);
+  // console.log(req.signedCookies);
+  console.log(req.session);
 
   let err = new Error('You are not authenticated');
   res.setHeader('WWW-Authenticate', 'Basic');
   err.status = 401;
 
-  if (!req.signedCookies.user) {
+  // if (!req.signedCookies.user) {
+  if (!req.session.user) {
     let authHeader = req.headers.authorization;
     console.log(authHeader);
 
@@ -66,13 +78,15 @@ function auth(req, res, next) {
     let password = auth[1];
 
     if (username === 'admin' && password === 'password') {
-      res.cookie('user', 'admin', { signed: true });
+      // res.cookie('user', 'admin', { signed: true });
+      req.session.user = 'admin';
       next();
     } else {
       return next(err);
     }
   } else {
-    if (req.signedCookies.user === 'admin') {
+    // if (req.signedCookies.user === 'admin') {
+    if (req.session.user === 'admin') {
       next();
     } else {
       return next(err);
