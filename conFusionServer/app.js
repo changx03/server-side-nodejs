@@ -27,29 +27,7 @@ mongoose.connect(url, { keepAlive: 120 }).then(
   }
 );
 
-function auth(req, res, next) {
-  let authHeader = req.headers.authorization;
-  console.log(authHeader);
-
-  let err = new Error('You are not authenticated');
-  res.setHeader('WWW-Authenticate', 'Basic');
-  err.status = 401;
-  if (!authHeader) {
-    return next(err);
-  }
-
-  let auth = Buffer.from(authHeader.split(' ')[1], 'base64')
-    .toString()
-    .split(':');
-  let username = auth[0];
-  let password = auth[1];
-
-  if (username === 'admin' && password === 'password') {
-    next();
-  } else {
-    return next(err);
-  }
-}
+const COOKIE_SECRET = 'my-secret-cat';
 
 const app = express();
 
@@ -64,7 +42,43 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(COOKIE_SECRET));
+
+function auth(req, res, next) {
+  console.log(req.signedCookies);
+
+  let err = new Error('You are not authenticated');
+  res.setHeader('WWW-Authenticate', 'Basic');
+  err.status = 401;
+
+  if (!req.signedCookies.user) {
+    let authHeader = req.headers.authorization;
+    console.log(authHeader);
+
+    if (!authHeader) {
+      return next(err);
+    }
+
+    let auth = Buffer.from(authHeader.split(' ')[1], 'base64')
+      .toString()
+      .split(':');
+    let username = auth[0];
+    let password = auth[1];
+
+    if (username === 'admin' && password === 'password') {
+      res.cookie('user', 'admin', { signed: true });
+      next();
+    } else {
+      return next(err);
+    }
+  } else {
+    if (req.signedCookies.user === 'admin') {
+      next();
+    } else {
+      return next(err);
+    }
+  }
+}
 
 app.use(auth);
 
