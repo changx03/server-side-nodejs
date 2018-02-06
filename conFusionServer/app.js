@@ -11,7 +11,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 
 const index = require('./routes/index');
-const users = require('./routes/users');
+const userRouter = require('./routes/userRouter');
 const dishRouter = require('./routes/dishRouter');
 const promoRouter = require('./routes/promoRouter');
 const leaderRouter = require('./routes/leaderRouter');
@@ -54,39 +54,24 @@ app.use(
   })
 );
 
+// these routes do not require authentication
+app.use('/', index);
+app.use('/users', userRouter);
+
 function auth(req, res, next) {
   // console.log(req.signedCookies);
-  console.log(req.session);
+  // console.log(req.session);
 
   let err = new Error('You are not authenticated');
   res.setHeader('WWW-Authenticate', 'Basic');
-  err.status = 401;
+  err.status = 403;
 
   // if (!req.signedCookies.user) {
   if (!req.session.user) {
-    let authHeader = req.headers.authorization;
-    console.log(authHeader);
-
-    if (!authHeader) {
-      return next(err);
-    }
-
-    let auth = Buffer.from(authHeader.split(' ')[1], 'base64')
-      .toString()
-      .split(':');
-    let username = auth[0];
-    let password = auth[1];
-
-    if (username === 'admin' && password === 'password') {
-      // res.cookie('user', 'admin', { signed: true });
-      req.session.user = 'admin';
-      next();
-    } else {
-      return next(err);
-    }
+    return next(err);
   } else {
     // if (req.signedCookies.user === 'admin') {
-    if (req.session.user === 'admin') {
+    if (req.session.user === 'authenticated') {
       next();
     } else {
       return next(err);
@@ -98,8 +83,6 @@ app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
 app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
