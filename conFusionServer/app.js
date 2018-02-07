@@ -9,7 +9,9 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const passport = require('passport');
 
+const authenticate = require('./authenticate');
 const index = require('./routes/index');
 const userRouter = require('./routes/userRouter');
 const dishRouter = require('./routes/dishRouter');
@@ -54,28 +56,23 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 // these routes do not require authentication
 app.use('/', index);
 app.use('/users', userRouter);
 
 function auth(req, res, next) {
-  // console.log(req.signedCookies);
   // console.log(req.session);
 
-  let err = new Error('You are not authenticated');
-  res.setHeader('WWW-Authenticate', 'Basic');
-  err.status = 403;
-
-  // if (!req.signedCookies.user) {
-  if (!req.session.user) {
+  if (!req.user) {
+    let err = new Error('You are not authenticated');
+    res.setHeader('WWW-Authenticate', 'Basic');
+    err.status = 403;
     return next(err);
   } else {
-    // if (req.signedCookies.user === 'admin') {
-    if (req.session.user === 'authenticated') {
-      next();
-    } else {
-      return next(err);
-    }
+    next();
   }
 }
 
