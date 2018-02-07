@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 
-const Users = require('../models/users');
+const User = require('../models/users');
 
 const router = express.Router();
 router.use(bodyParser.json());
@@ -13,7 +13,9 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signup', (req, res, next) => {
-  Users.register(
+  console.log(req.body);
+
+  User.register(
     new User({ username: req.body.username }),
     req.body.password,
     (err, user) => {
