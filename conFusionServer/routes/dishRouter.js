@@ -13,6 +13,7 @@ dishRouter
   .route('/') // route '/dishes'
   .get((req, res, next) => {
     Dishes.find({})
+      .populate('comments.author')
       .then(
         dishes => {
           res.statusCode = 200;
@@ -58,6 +59,7 @@ dishRouter
   .route('/:dishID')
   .get((req, res, next) => {
     Dishes.findById(req.params.dishID)
+      .populate('comments.author')
       .then(
         dish => {
           res.statusCode = 200;
@@ -107,6 +109,7 @@ dishRouter
   .route('/:dishID/comments')
   .get((req, res, next) => {
     Dishes.findById(req.params.dishID)
+      .populate('comments.author')
       .then(
         dish => {
           if (!!dish) {
@@ -128,6 +131,7 @@ dishRouter
       .then(
         dish => {
           if (!!dish) {
+            req.body.author = req.user._id;
             dish.comments.push(req.body);
             dish.save().then(dish => {
               res.statusCode = 200;
@@ -178,6 +182,7 @@ dishRouter
   .route('/:dishID/comments/:commentID')
   .get((req, res, next) => {
     Dishes.findById(req.params.dishID)
+      .populate('comments.author')
       .then(
         dish => {
           if (!!dish && !!dish.comments.id(req.params.commentID)) {
