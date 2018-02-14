@@ -125,7 +125,7 @@ dishRouter
             res.setHeader('Content-Type', 'application/json');
             res.json(dish.comments);
           } else {
-            err = new Error(`Dish ${req.params.dishID} not found`);
+            let err = new Error(`Dish ${req.params.dishID} not found`);
             err.status = 404;
             return next(err);
           }
@@ -147,7 +147,7 @@ dishRouter
               res.json(dish);
             });
           } else {
-            err = new Error(`Dish ${req.params.dishID} not found`);
+            let err = new Error(`Dish ${req.params.dishID} not found`);
             err.status = 404;
             return next(err);
           }
@@ -179,7 +179,7 @@ dishRouter
                 res.json(result);
               });
             } else {
-              err = new Error(`Dish ${req.params.dishID} not found`);
+              let err = new Error(`Dish ${req.params.dishID} not found`);
               err.status = 404;
               return next(err);
             }
@@ -202,11 +202,11 @@ dishRouter
             res.setHeader('Content-Type', 'application/json');
             res.json(dish.comments.id(req.params.commentID));
           } else if (!dish) {
-            err = new Error(`Dish ${req.params.dishID} not found`);
+            let err = new Error(`Dish ${req.params.dishID} not found`);
             err.status = 404;
             return next(err);
           } else {
-            err = new Error(`Comment ${req.params.commentID} not found`);
+            let err = new Error(`Comment ${req.params.commentID} not found`);
             err.status = 404;
             return next(err);
           }
@@ -234,7 +234,7 @@ dishRouter
                 .id(req.params.commentID)
                 .author.equals(req.user._id)
             ) {
-              err = new Error(
+              let err = new Error(
                 'You are not authorized to perform this operation!'
               );
               err.status = 403;
@@ -256,11 +256,11 @@ dishRouter
               err => next(err)
             );
           } else if (!dish) {
-            err = new Error(`Dish ${req.params.dishID} not found`);
+            let err = new Error(`Dish ${req.params.dishID} not found`);
             err.status = 404;
             return next(err);
           } else {
-            err = new Error(`Comment ${req.params.commentID} not found`);
+            let err = new Error(`Comment ${req.params.commentID} not found`);
             err.status = 404;
             return next(err);
           }
@@ -280,7 +280,7 @@ dishRouter
                 .id(req.params.commentID)
                 .author.equals(req.user._id)
             ) {
-              err = new Error(
+              let err = new Error(
                 'You are not authorized to perform this operation!'
               );
               err.status = 403;
@@ -297,11 +297,11 @@ dishRouter
               err => next(err)
             );
           } else if (!dish) {
-            err = new Error(`Dish ${req.params.dishID} not found`);
+            let err = new Error(`Dish ${req.params.dishID} not found`);
             err.status = 404;
             return next(err);
           } else {
-            err = new Error(`Comment ${req.params.commentID} not found`);
+            let err = new Error(`Comment ${req.params.commentID} not found`);
             err.status = 404;
             return next(err);
           }
