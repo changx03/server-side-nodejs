@@ -9,7 +9,7 @@ const promoRouter = express.Router();
 promoRouter.use(bodyParser.json());
 
 promoRouter
-  .route('/') // route '/dishes'
+  .route('/')
   .get((req, res, next) => {
     Promostions.find({})
       .then(
