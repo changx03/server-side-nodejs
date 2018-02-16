@@ -25,25 +25,32 @@ const upload = multer({
   fileFilter: imageFileFilter,
 });
 
-const router = express.router();
+const router = express.Router();
 router.use(bodyParser.json());
 
 router
   .route('/')
-  .get((req, res, next) => {
+  .get((req, res) => {
     res.statusCode = 403;
     res.end('GET operation is not supported on /imageUpload');
   })
-  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-
-  })
-  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-
-  })
-  .delete(
-    authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-
+  .post(
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    upload.single('imageFile'),
+    (req, res) => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(req.file);
     }
-  );
+  )
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
+    res.statusCode = 403;
+    res.end('PUT operation is not supported on /imageUpload');
+  })
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
+    res.statusCode = 403;
+    res.end('DELETE operation is not supported on /imageUpload');
+  });
 
 module.exports = router;
