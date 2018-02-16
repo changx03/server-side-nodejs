@@ -39,7 +39,7 @@ dishRouter
   })
   .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403; // not supported
-    res.end('PUT operation not supported on /dishes');
+    res.end('PUT operation is not supported on /dishes');
   })
   .delete(
     authenticate.verifyUser,

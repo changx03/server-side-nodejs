@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const Promostions = require('../models/promotions');
+const Promotions = require('../models/promotions');
 const authenticate = require('../authenticate');
 
 const promoRouter = express.Router();
@@ -11,7 +11,7 @@ promoRouter.use(bodyParser.json());
 promoRouter
   .route('/')
   .get((req, res, next) => {
-    Promostions.find({})
+    Promotions.find({})
       .then(
         promos => {
           res.statusCode = 200;
@@ -23,7 +23,7 @@ promoRouter
       .catch(err => next(err));
   })
   .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    Promostions.create(req.body)
+    Promotions.create(req.body)
       .then(
         promo => {
           res.statusCode = 200;
@@ -39,7 +39,7 @@ promoRouter
     res.end('PUT operation not supported on /promotions');
   })
   .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    Promostions.remove({})
+    Promotions.remove({})
       .then(
         resp => {
           res.statusCode = 200;
@@ -54,7 +54,7 @@ promoRouter
 promoRouter
   .route('/:promoID')
   .get((req, res, next) => {
-    Promostions.findById(req.params.promoID)
+    Promotions.findById(req.params.promoID)
       .then(
         promo => {
           res.statusCode = 200;
@@ -72,7 +72,7 @@ promoRouter
     );
   })
   .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    Promostions.findByIdAndUpdate(
+    Promotions.findByIdAndUpdate(
       req.params.promoID,
       { $set: req.body },
       { new: true }
@@ -88,7 +88,7 @@ promoRouter
       .catch(err => next(err));
   })
   .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    Promostions.findByIdAndRemove(req.params.promoID)
+    Promotions.findByIdAndRemove(req.params.promoID)
       .then(
         resp => {
           res.statusCode = 200;
