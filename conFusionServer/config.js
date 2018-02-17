@@ -4,4 +4,8 @@ module.exports = {
   hostName: 'localhost',
   port1: 8000,
   port2: 8443,
+  facebook: {
+    clientID: '1533973403364805',
+    clientSecret: '2e9b7ced46c497e92436f9e0a7ba1649',
+  }
 };

@@ -15,6 +15,7 @@ const User = new Schema({
     type: Boolean,
     default: false,
   },
+  facebookID: String,
 });
 
 User.plugin(poassportLocalMon);
