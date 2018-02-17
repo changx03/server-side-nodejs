@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -30,11 +31,13 @@ router.use(bodyParser.json());
 
 router
   .route('/')
-  .get((req, res) => {
+  .options(cors.corsWithOptions) // enable pre-flight request
+  .get(cors.cors, (req, res) => {
     res.statusCode = 403;
     res.end('GET operation is not supported on /imageUpload');
   })
   .post(
+    cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     upload.single('imageFile'),
@@ -44,13 +47,23 @@ router
       res.json(req.file);
     }
   )
-  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
-    res.statusCode = 403;
-    res.end('PUT operation is not supported on /imageUpload');
-  })
-  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
-    res.statusCode = 403;
-    res.end('DELETE operation is not supported on /imageUpload');
-  });
+  .put(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res) => {
+      res.statusCode = 403;
+      res.end('PUT operation is not supported on /imageUpload');
+    }
+  )
+  .delete(
+    cors.corsWithOptions,
+    authenticate.verifyUser,
+    authenticate.verifyAdmin,
+    (req, res) => {
+      res.statusCode = 403;
+      res.end('DELETE operation is not supported on /imageUpload');
+    }
+  );
 
 module.exports = router;

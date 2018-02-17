@@ -3,21 +3,22 @@ const debug = require('debug')('confusionserver:server');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+const config = require('../config');
 
 /**
  * Get port from environment and store in Express.
  */
-const hostName = 'localhost';
+
 const port = normalizePort(process.env.PORT || '8000');
-app.set('port', port);
-app.set('secPort', port + 443);
+app.set('port', config.port1);
+app.set('secPort', config.port2);
 
 /**
  * Create, and listen HTTP server
  */
 const server = http.createServer(app);
-server.listen(port, hostName, () => {
-  console.log(`Server is running on http://${hostName}:${port}`);
+server.listen(config.port1, config.hostName, () => {
+  console.log(`Server is running on http://${config.hostName}:${config.port1}`);
 });
 server.on('error', onError);
 server.on('listening', onListening);
@@ -30,8 +31,8 @@ const options = {
   cert: fs.readFileSync(`${__dirname}/certificate.pem`)
 };
 const secureServer = https.createServer(options, app);
-secureServer.listen(app.get('secPort'), hostName, () => {
-  console.log(`Secure server is running on https://${hostName}:${app.get('secPort')}`);
+secureServer.listen(app.get('secPort'), config.hostName, () => {
+  console.log(`Secure server is running on https://${config.hostName}:${app.get('secPort')}`);
 });
 secureServer.on('error', onError);
 secureServer.on('listening', onSecureListening);
