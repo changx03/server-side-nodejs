@@ -102,15 +102,10 @@ favoriteRouter
         } else {
           Favorite.create({
             user: req.user._id,
+            dishes: req.params.dishID,
           })
             .then(favorite => {
-              saveDishes(favorite, req.params.dishID, (err, favorite) => {
-                if (err) {
-                  next(err);
-                } else {
-                  jsonResponse200(res, favorite);
-                }
-              });
+              jsonResponse200(res, favorite);
             })
             .catch(err => next(err));
         }
