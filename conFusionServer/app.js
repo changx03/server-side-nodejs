@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const favicon = require('serve-favicon');
+// const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -12,7 +12,7 @@ const FileStore = require('session-file-store')(session);
 const passport = require('passport');
 
 const authenticate = require('./authenticate');
-const config = require('./config');
+// const config = require('./config');
 const dishRouter = require('./routes/dishRouter');
 const favoriteRouter = require('./routes/favoriteRouter');
 const index = require('./routes/index');
@@ -23,7 +23,8 @@ const userRouter = require('./routes/users');
 // const promoRouter = require('./routes/promoRouter');
 // const uploadRouter = require('./routes/uploadRouter');
 
-const url = config.mongoUrl;
+// const url = config.mongoUrl;
+const url = 'mongodb://localhost:27017/conFusion';
 
 mongoose.connect(url, { keepAlive: 120 }).then(
   () => {

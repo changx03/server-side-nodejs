@@ -1,7 +1,6 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
-// const ObjectId = require('mongodb').ObjectID;
 
 const Favorite = require('../models/favorite');
 const authenticate = require('../authenticate');
@@ -192,7 +191,7 @@ function saveDishes(fav, dishes, callback) {
  * @param {string} dishID
  * @param {function} callback
  */
-function saveDishes(fav, dishID, callback) {
+function saveDish(fav, dishID, callback) {
   fav.dishes.addToSet(dishID);
   fav
     .save()
