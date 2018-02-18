@@ -31,7 +31,9 @@ router.use(bodyParser.json());
 
 router
   .route('/')
-  .options(cors.corsWithOptions) // enable pre-flight request
+  .options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+  }) // enable pre-flight request
   .get(cors.cors, (req, res) => {
     res.statusCode = 403;
     res.end('GET operation is not supported on /imageUpload');

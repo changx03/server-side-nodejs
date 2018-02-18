@@ -11,9 +11,11 @@ promoRouter.use(bodyParser.json());
 
 promoRouter
   .route('/')
-  .options(cors.corsWithOptions) // enable pre-flight request
+  .options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+  }) // enable pre-flight request
   .get(cors.cors, (req, res, next) => {
-    Promotions.find({})
+    Promotions.find(req.query)
       .then(
         promos => {
           res.statusCode = 200;

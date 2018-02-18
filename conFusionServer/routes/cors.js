@@ -5,6 +5,7 @@ const config = require('../config');
 const whiteList = [
   `http://${config.hostName}:${config.port1}`,
   `https://${config.hostName}:${config.port2}`,
+  `https://${config.hostName}:${config.port3}`,
 ];
 
 const corsOptionsDelegate = (req, callback) => {

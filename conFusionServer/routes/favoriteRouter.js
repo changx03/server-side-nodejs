@@ -28,12 +28,18 @@ favoriteRouter
           jsonResponse200(res, favorite);
         } else {
           // create one if it is not exist
-          // This path does not populate user information!
           Favorite.create({
             user: req.user._id,
           })
             .then(favorite => {
-              jsonResponse200(res, favorite);
+              // populate user and dishes information after create
+              Favorite.findById(favorite._id)
+                .populate('user')
+                .populate('dishes')
+                .then(favorite => {
+                  jsonResponse200(res, favorite);
+                })
+                .catch(err => next(err));
             })
             .catch(err => next(err));
         }
