@@ -88,11 +88,19 @@ favoriteRouter
     res.sendStatus(200);
   }) // enable pre-flight request
   .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    // There is no insturction for GET '/favorites/:dishId'
-    res.statusCode = 403; // not supported
-    res.end(
-      `Get operation is not supported on /favorites/${req.params.dishID}`
-    );
+    Favorite.findOne({ user: req.user._id })
+      .then(favorite => {
+        if (!favorite) {
+          jsonResponse200(res, { exists: false, favorites: favorite });
+        } else {
+          if (favorite.dishes.indexOf(req.params.dishID) === -1) {
+            jsonResponse200(res, { exists: false, favorites: favorite });
+          } else {
+            jsonResponse200(res, { exists: true, favorites: favorite });
+          }
+        }
+      })
+      .catch(err => next(err));
   })
   .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Favorite.findOne({ user: req.user._id })
@@ -134,7 +142,12 @@ favoriteRouter
           favorite
             .save()
             .then(favorite => {
-              jsonResponse200(res, favorite);
+              Favorite.findById(favorite._id)
+                .populate('user')
+                .populate('dishes')
+                .then(favorite => {
+                  jsonResponse200(res, favorite);
+                });
             })
             .catch(err => next(err));
         }

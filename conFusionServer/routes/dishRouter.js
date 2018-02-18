@@ -274,7 +274,11 @@ dishRouter
             }
             dish.save().then(
               dish => {
-                jsonResponse200(res, dish);
+                Dishes.findById(dish._id)
+                  .populate('comments.author')
+                  .then(dish => {
+                    jsonResponse200(res, dish);
+                  });
               },
               err => next(err)
             );
@@ -313,7 +317,11 @@ dishRouter
             dish.comments.id(req.params.commentID).remove();
             dish.save().then(
               dish => {
-                jsonResponse200(res, dish);
+                Dishes.findById(dish._id)
+                  .populate('comments.author')
+                  .then(dish => {
+                    jsonResponse200(res, dish);
+                  });
               },
               err => next(err)
             );
