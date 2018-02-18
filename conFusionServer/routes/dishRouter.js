@@ -23,9 +23,7 @@ dishRouter
       .populate('comments.author')
       .then(
         dishes => {
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          res.json(dishes);
+          jsonResponse200(res, dishes);
         },
         err => next(err)
       )
@@ -39,10 +37,7 @@ dishRouter
       Dishes.create(req.body)
         .then(
           dish => {
-            console.log('Dish created', dish);
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(dish);
+            jsonResponse200(res, dish);
           },
           err => next(err)
         )
@@ -64,13 +59,10 @@ dishRouter
     authenticate.verifyAdmin,
     (req, res, next) => {
       console.log('Deleting all the dishes!');
-      console.log(req);
       Dishes.remove({})
         .then(
           resp => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(resp);
+            jsonResponse200(res, resp);
           },
           err => next(err)
         )
@@ -88,9 +80,7 @@ dishRouter
       .populate('comments.author')
       .then(
         dish => {
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          res.json(dish);
+          jsonResponse200(res, dish);
         },
         err => next(err)
       )
@@ -121,9 +111,7 @@ dishRouter
       )
         .then(
           dish => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(dish);
+            jsonResponse200(res, dish);
           },
           err => next(err)
         )
@@ -138,9 +126,7 @@ dishRouter
       Dishes.findByIdAndRemove(req.params.dishID)
         .then(
           resp => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(resp);
+            jsonResponse200(res, resp);
           },
           err => next(err)
         )
@@ -159,9 +145,7 @@ dishRouter
       .then(
         dish => {
           if (dish) {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(dish.comments);
+            jsonResponse200(res, dish.comments);
           } else {
             let err = new Error(`Dish ${req.params.dishID} not found`);
             err.status = 404;
@@ -183,9 +167,7 @@ dishRouter
               Dishes.findById(dish._id)
                 .populate('comments.author')
                 .then(dish => {
-                  res.statusCode = 200;
-                  res.setHeader('Content-Type', 'application/json');
-                  res.json(dish);
+                  jsonResponse200(res, dish);
                 })
                 .catch(err => next(err));
             });
@@ -218,9 +200,7 @@ dishRouter
                 { _id: req.params.dishID },
                 { $set: { comments: [] } }
               ).then(result => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(result);
+                jsonResponse200(res, result);
               });
             } else {
               let err = new Error(`Dish ${req.params.dishID} not found`);
@@ -245,9 +225,7 @@ dishRouter
       .then(
         dish => {
           if (!!dish && !!dish.comments.id(req.params.commentID)) {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(dish.comments.id(req.params.commentID));
+            jsonResponse200(res, dish.comments.id(req.params.commentID));
           } else if (!dish) {
             let err = new Error(`Dish ${req.params.dishID} not found`);
             err.status = 404;
@@ -296,9 +274,7 @@ dishRouter
             }
             dish.save().then(
               dish => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(dish);
+                jsonResponse200(res, dish);
               },
               err => next(err)
             );
@@ -337,9 +313,7 @@ dishRouter
             dish.comments.id(req.params.commentID).remove();
             dish.save().then(
               dish => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(dish);
+                jsonResponse200(res, dish);
               },
               err => next(err)
             );
@@ -357,5 +331,11 @@ dishRouter
       )
       .catch(err => next(err));
   });
+
+function jsonResponse200(res, body) {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'application/json');
+  res.json(body);
+}
 
 module.exports = dishRouter;
