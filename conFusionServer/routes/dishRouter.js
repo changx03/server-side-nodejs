@@ -19,7 +19,7 @@ dishRouter
     res.sendStatus(200);
   }) // enable pre-flight request
   .get(cors.cors, (req, res, next) => {
-    Dishes.find({})
+    Dishes.find(req.query)
       .populate('comments.author')
       .then(
         dishes => {
@@ -158,7 +158,7 @@ dishRouter
       .populate('comments.author')
       .then(
         dish => {
-          if (!!dish) {
+          if (dish) {
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
             res.json(dish.comments);
@@ -176,13 +176,18 @@ dishRouter
     Dishes.findById(req.params.dishID)
       .then(
         dish => {
-          if (!!dish) {
+          if (dish) {
             req.body.author = req.user._id;
             dish.comments.push(req.body);
             dish.save().then(dish => {
-              res.statusCode = 200;
-              res.setHeader('Content-Type', 'application/json');
-              res.json(dish);
+              Dishes.findById(dish._id)
+                .populate('comments.author')
+                .then(dish => {
+                  res.statusCode = 200;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.json(dish);
+                })
+                .catch(err => next(err));
             });
           } else {
             let err = new Error(`Dish ${req.params.dishID} not found`);
@@ -208,7 +213,7 @@ dishRouter
       Dishes.findById(req.params.dishID)
         .then(
           dish => {
-            if (!!dish) {
+            if (dish) {
               Dishes.update(
                 { _id: req.params.dishID },
                 { $set: { comments: [] } }
