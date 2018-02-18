@@ -54,15 +54,10 @@ favoriteRouter
         } else {
           Favorite.create({
             user: req.user._id,
+            dishes: req.body,
           })
             .then(favorite => {
-              saveDishes(favorite, req.body, (err, favorite) => {
-                if (err) {
-                  next(err);
-                } else {
-                  jsonResponse200(res, favorite);
-                }
-              });
+              jsonResponse200(res, favorite);
             })
             .catch(err => next(err));
         }
